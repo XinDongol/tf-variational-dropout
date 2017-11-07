@@ -22,7 +22,7 @@ def clip(x):
     return tf.clip_by_value(x, -8., 8.)
 
 def get_log_alpha(log_sigma2, w):
-    log_alpha = clip(log_sigma2 - paranoid_log(tf.square(w)))
+    log_alpha = clip(log_sigma2 - paranoid_log(tf.square(w)))  # log(alpha) = 2log(sigma) - 2log(w) see equ(11)
     return tf.identity(log_alpha, name='log_alpha')
 
 def fully_connected(x, phase, n_hidden, activation_fn=tf.nn.relu, thresh=3,
@@ -45,7 +45,7 @@ def fully_connected(x, phase, n_hidden, activation_fn=tf.nn.relu, thresh=3,
         return activation_fn(activations + b)
 
 def fc_noisy(x, log_alpha, w):
-    mu = tf.matmul(x, w)
+    mu = tf.matmul(x, w)   # notice, here w is theta in paper
     si = tf.sqrt(tf.matmul(tf.square(x), tf.exp(log_alpha)*tf.square(w))+1e-8)
     return mu + si*tf.random_normal(tf.shape(mu))
 
