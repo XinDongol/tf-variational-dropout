@@ -18,7 +18,7 @@ def deepnn(x, phase):
     Args:
         x: an input tensor with the dimensions (N_examples, 784), where 784 is the
         number of pixels in a standard MNIST image.
-        x: True is train, False is test
+        phase: True is train, False is test
 
     Returns:
         A tuple (y, log_alphas). y is a tensor of shape (N_examples, 10), with values
@@ -77,7 +77,7 @@ def main():
                                                             logits=y_conv))
         # prior DKL part of the ELBO
         log_alphas = vd.gather_logalphas(tf.get_default_graph())
-        divergences = [vd.dkl_qp(la) for la in log_alphas]
+        divergences = [vd.dkl_qp(la) for la in log_alphas]   # we may can control this important-weights for diff layers
         # combine to form the ELBO
         N = float(mnist.train.images.shape[0])
         dkl = tf.reduce_sum(tf.stack(divergences))
