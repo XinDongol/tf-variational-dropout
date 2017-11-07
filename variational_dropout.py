@@ -92,6 +92,7 @@ def log_sigma2_variable(shape, ard_init=-10.):
     return tf.get_variable("log_sigma2", shape=shape,
             initializer=tf.constant_initializer(ard_init))
 
+# KL divgence, which only have relation with alpha!
 def dkl_qp(log_alpha):
     k1, k2, k3 = 0.63576, 1.8732, 1.48695; C = -k1
     mdkl = k1 * tf.nn.sigmoid(k2 + k3 * log_alpha) - 0.5 * tf.log1p(tf.exp(-log_alpha)) + C
@@ -106,10 +107,10 @@ def sparseness(log_alphas, thresh=3):
         n_total = tf.cast(tf.reduce_prod(tf.shape(m)), tf.float32)
         N_active += n_active
         N_total += n_total
-    return 1.0 - N_active/N_total
+    return 1.0 - N_active/N_total  # ratio of zero
 
 # utility to gather variational dropout parameters
 def gather_logalphas(graph):
-    node_defs = [n for n in graph.as_graph_def().node if 'log_alpha' in n.name]
+    node_defs = [n for n in graph.as_graph_def().node if 'log_alpha' in n.name]  # get by name. when you init your alpha, keep this in mind
     tensors = [graph.get_tensor_by_name(n.name+":0") for n in node_defs]
     return tensors
