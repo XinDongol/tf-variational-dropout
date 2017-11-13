@@ -46,7 +46,7 @@ def fully_connected(x, phase, n_hidden, activation_fn=tf.nn.relu, thresh=3,
 
 def fc_noisy(x, log_alpha, w):
     mu = tf.matmul(x, w)   # notice, here w is theta in paper
-    si = tf.sqrt(tf.matmul(tf.square(x), tf.exp(log_alpha)*tf.square(w))+1e-8)
+    si = tf.sqrt(tf.matmul(tf.square(x), tf.exp(log_alpha)*tf.square(w))+1e-8)  # see equ 17
     return mu + si*tf.random_normal(tf.shape(mu))
 
 def fc_masked(x, select_mask, w):
@@ -92,7 +92,7 @@ def log_sigma2_variable(shape, ard_init=-10.):
     return tf.get_variable("log_sigma2", shape=shape,
             initializer=tf.constant_initializer(ard_init))
 
-# KL divgence, which only have relation with alpha!
+# KL divgence, which only have relation with alpha (log_alpha)!
 def dkl_qp(log_alpha):
     k1, k2, k3 = 0.63576, 1.8732, 1.48695; C = -k1
     mdkl = k1 * tf.nn.sigmoid(k2 + k3 * log_alpha) - 0.5 * tf.log1p(tf.exp(-log_alpha)) + C
